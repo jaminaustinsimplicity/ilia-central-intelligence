@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ILIA Central Intelligence Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-deep: #004372;
+    --blue-mid: #0076BD;
+    --blue-light: #66A4D9;
+    --blue-pale: #EBF4FB;
+    --green: #30934C;
+    --green-pale: #E6F5EA;
+    --white: #FFFFFF;
+    --off-white: #F5F7FA;
+    --ink: #0D1F2D;
+    --muted: #6B7E8F;
+    --border: #D4DFE9;
+    --staging: #F4A623;
+    --staging-pale: #FEF4E3;
+    --purple: #7C3AED;
+    --purple-pale: #F3EFFE;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--ink); }
+
+  /* HEADER */
+  header {
+    background: var(--blue-deep);
+    padding: 52px 40px 40px;
+    position: relative; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(0,118,189,0.3) 0%, transparent 65%);
+    top: -250px; right: -150px; border-radius: 50%;
+  }
+  header::after {
+    content: ''; position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(48,147,76,0.15) 0%, transparent 70%);
+    bottom: -100px; left: 100px; border-radius: 50%;
+  }
+  .header-inner { max-width: 1160px; margin: 0 auto; position: relative; z-index: 1; }
+  .badge {
+    display: inline-block;
+    background: rgba(102,164,217,0.2); color: var(--blue-light);
+    font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(102,164,217,0.35); margin-bottom: 18px;
+  }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: clamp(34px,5vw,54px); color: #fff; line-height: 1.1; margin-bottom: 14px; }
+  header h1 em { color: var(--blue-light); font-style: italic; }
+  header p { color: rgba(255,255,255,0.6); font-size: 15px; font-weight: 300; max-width: 580px; line-height: 1.65; margin-bottom: 30px; }
+  .meta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .meta-pill {
+    display: flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px; padding: 6px 14px; font-size: 12px; color: rgba(255,255,255,0.68);
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+  /* LAYOUT */
+  main { max-width: 1160px; margin: 0 auto; padding: 44px 24px 80px; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* GOVERNANCE */
+  .gov-strip { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 10px; margin-bottom: 44px; }
+  .gov-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; display: flex; gap: 12px; align-items: flex-start; }
+  .gov-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .gov-card h4 { font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+  .gov-card p { font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+
+  /* CONNECTED SYSTEMS ROW */
+  .systems-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 44px; }
+  @media(max-width:900px){ .systems-row { grid-template-columns: repeat(3,1fr); } }
+  @media(max-width:580px){ .systems-row { grid-template-columns: repeat(2,1fr); } }
+  .sys-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px 14px; position: relative; overflow: hidden; }
+  .sys-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .sys-card.c-drive::before { background: var(--blue-mid); }
+  .sys-card.c-conf::before { background: #0052CC; }
+  .sys-card.c-jira::before { background: #0052CC; }
+  .sys-card.c-gh::before { background: #24292F; }
+  .sys-card.c-claude::before { background: var(--green); }
+  .sys-icon { font-size: 20px; margin-bottom: 8px; }
+  .sys-name { font-weight: 700; font-size: 12.5px; color: var(--ink); margin-bottom: 5px; }
+  .sys-owns { list-style: none; font-size: 11px; color: var(--muted); line-height: 1.55; }
+  .sys-owns li { padding-left: 10px; position: relative; }
+  .sys-owns li::before { content: '·'; position: absolute; left: 0; color: var(--blue-mid); }
+  .sys-status { display: inline-block; margin-top: 10px; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; letter-spacing: .05em; }
+  .status-live { background: #E8F5E9; color: var(--green); }
+  .status-pending { background: #FEF4E3; color: #9B5500; }
+
+  /* DRIVE STRUCTURE */
+  .drive-wrap { margin-bottom: 44px; }
+  .drive-topbar {
+    background: var(--blue-deep); border-radius: 12px 12px 0 0;
+    padding: 15px 22px; display: flex; align-items: center; gap: 10px;
+  }
+  .drive-topbar .dtitle { color: #fff; font-weight: 700; font-size: 14px; }
+  .drive-topbar .dsub { color: rgba(255,255,255,.4); font-size: 11.5px; font-family: 'DM Mono',monospace; margin-left: auto; }
+
+  .drive-body { background: var(--white); border: 1px solid var(--border); border-top: none; border-radius: 0 0 12px 12px; overflow: hidden; }
+
+  /* TOP-LEVEL FOLDER ROW */
+  .tl-folder {
+    border-bottom: 1px solid var(--border);
+  }
+  .tl-folder:last-child { border-bottom: none; }
+
+  .tl-header {
+    display: grid; grid-template-columns: 280px 1fr;
+    min-height: 68px; cursor: pointer;
+    transition: background .12s;
+  }
+  .tl-header:hover { background: #FAFBFC; }
+
+  .tl-left { padding: 13px 20px; display: flex; align-items: center; gap: 11px; border-right: 1px solid var(--border); }
+  .tl-num { font-family: 'DM Mono',monospace; font-size: 11px; color: var(--muted); min-width: 22px; }
+  .folder-icon-wrap { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+  .tl-name { font-weight: 700; font-size: 13.5px; color: var(--ink); line-height: 1.25; }
+  .tl-tag { display: inline-block; margin-top: 3px; font-size: 10px; padding: 2px 7px; border-radius: 3px; font-weight: 600; letter-spacing: .04em; }
+
+  .tl-right { padding: 13px 18px; display: flex; align-items: center; justify-content: space-between; }
+  .chip-wrap { display: flex; flex-wrap: wrap; gap: 5px; flex: 1; }
+  .chip { background: var(--off-white); border: 1px solid var(--border); border-radius: 5px; padding: 3px 9px; font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .chip.pending { border-style: dashed; color: #9B7700; background: #FFFBF0; }
+  .expand-icon { font-size: 14px; color: var(--border); margin-left: 12px; transition: transform .2s; flex-shrink: 0; }
+  .tl-header.open .expand-icon { transform: rotate(90deg); }
+
+  /* SUBFOLDER PANEL */
+  .subfolder-panel { display: none; border-top: 1px solid var(--border); background: #FAFBFD; }
+  .subfolder-panel.open { display: block; }
+
+  /* SUB-CATEGORIES (By Role / By Process / By Integration) */
+  .sub-category { border-bottom: 1px solid var(--border); }
+  .sub-category:last-child { border-bottom: none; }
+  .sub-cat-header { padding: 10px 20px 10px 60px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .sub-cat-header:hover { background: #F0F4F8; }
+  .sub-cat-icon { font-size: 14px; }
+  .sub-cat-name { font-size: 12.5px; font-weight: 600; color: var(--ink); flex: 1; }
+  .sub-cat-count { font-family: 'DM Mono',monospace; font-size: 10px; color: var(--muted); }
+  .sub-expand { font-size: 12px; color: var(--border); transition: transform .15s; }
+  .sub-cat-header.open .sub-expand { transform: rotate(90deg); }
+
+  .sub-items { display: none; padding: 0 20px 12px 76px; }
+  .sub-items.open { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sub-item { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 11.5px; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+  .sub-item .item-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .sub-item.is-pending { border-style: dashed; color: var(--muted); }
+  .sub-item.is-pending .item-dot { background: #D4A017; }
+  .sub-item .item-dot.live { background: var(--green); }
+
+  /* Simple subfolder list (non-expandable) */
+  .simple-sublist { padding: 12px 20px 14px 60px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .simple-sublist .sub-item { background: var(--white); }
+
+  /* Tags */
+  .tag-ai { background: #E3F5EA; color: #1B6B35; }
+  .tag-ops { background: #E3F0FB; color: #1454A0; }
+  .tag-working { background: var(--purple-pale); color: var(--purple); }
+  .tag-design { background: #FFF3E0; color: #C05000; }
+  .tag-assets { background: var(--staging-pale); color: #9B5500; }
+  .tag-buffer { background: #FEF4E3; color: #9B5500; }
+  .tag-ref { background: #E8F5E9; color: #1B5E20; }
+
+  .fi-staging { background: var(--staging-pale); }
+  .fi-intel { background: #EBF3FB; }
+  .fi-sop { background: #ECF4FF; }
+  .fi-projects { background: #EDF7F1; }
+  .fi-design { background: #F5EFFE; }
+  .fi-marketing { background: #FEF4E3; }
+  .fi-team { background: #F0F5EE; }
+
+  /* BUILD ORDER */
+  .build-order { display: flex; gap: 0; margin-bottom: 44px; overflow: hidden; border-radius: 10px; border: 1px solid var(--border); }
+  @media(max-width:700px){ .build-order { flex-direction: column; } }
+  .build-step { flex: 1; background: var(--white); padding: 18px 16px; border-right: 1px solid var(--border); position: relative; }
+  .build-step:last-child { border-right: none; }
+  .step-num { font-family: 'DM Mono',monospace; font-size: 22px; font-weight: 500; color: var(--border); margin-bottom: 8px; }
+  .step-title { font-size: 12.5px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+  .step-desc { font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+  .build-step.done .step-num { color: var(--green); }
+  .build-step.active .step-num { color: var(--blue-mid); }
+  .build-step.active { background: var(--blue-pale); }
+  .step-badge { position: absolute; top: 14px; right: 14px; font-size: 9.5px; padding: 2px 7px; border-radius: 10px; font-weight: 700; letter-spacing: .05em; }
+  .sb-done { background: #E8F5E9; color: var(--green); }
+  .sb-now { background: #DBEEFF; color: var(--blue-mid); }
+  .sb-wait { background: var(--off-white); color: var(--muted); border: 1px solid var(--border); }
+
+  /* RULES */
+  .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 44px; }
+  @media(max-width:640px){ .rules-grid { grid-template-columns: 1fr; } }
+  .rule-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .rule-card h4 { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 9px; display: flex; align-items: center; gap: 7px; }
+  .rule-card ul { list-style: none; font-size: 12px; color: var(--muted); line-height: 1.65; }
+  .rule-card ul li { padding-left: 14px; position: relative; }
+  .rule-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--blue-mid); font-size: 10px; top: 1px; }
+
+  footer { text-align: center; padding: 24px; font-size: 11.5px; color: var(--muted); border-top: 1px solid var(--border); }
+  footer a { color: var(--blue-mid); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="badge">NIW Companies · Simplicity Group · ILIA Platform</div>
+    <h1>ILIA <em>Central Intelligence</em> Hub</h1>
+    <p>The living source of truth for the entire ILIA platform — every workflow, SOP, project, design asset, and team reference in one governed, structured space. Click any folder to explore.</p>
+    <div class="meta-row">
+      <div class="meta-pill"><span class="dot"></span> End-State Structure · Approved Design</div>
+      <div class="meta-pill">📁 7 Core Folders · 30+ Workflow Areas</div>
+      <div class="meta-pill">🔗 Drive · Confluence · JIRA · GitHub · Claude</div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- GOVERNANCE -->
+  <div class="section-label" style="margin-top:4px;">Governance Model</div>
+  <div class="gov-strip">
+    <div class="gov-card">
+      <div class="gov-icon" style="background:#EBF3FB;">👤</div>
+      <div><h4>Single Admin Owner</h4><p>One person controls what's authoritative. Structure approved before any file is added.</p></div>
+    </div>
+    <div class="gov-card">
+      <div class="gov-icon" style="background:#E8F5E9;">🔒</div>
+      <div><h4>View-Only Default</h4><p>Team gets read access. 2–3 trusted contributors have folder-specific edit rights.</p></div>
+    </div>
+    <div class="gov-card">
+      <div class="gov-icon" style="background:var(--staging-pale);">📥</div>
+      <div><h4>Staging Buffer</h4><p>New files land in 00 — Staging. Admin reviews and places them in the correct home.</p></div>
+    </div>
+    <div class="gov-card">
+      <div class="gov-icon" style="background:#F3EFFE;">🚫</div>
+      <div><h4>No Duplication</h4><p>Confluence links to Drive. Nothing lives in both. One source, one location, always.</p></div>
+    </div>
+    <div class="gov-card">
+      <div class="gov-icon" style="background:#EDF7F1;">🤖</div>
+      <div><h4>AI-Ready Structure</h4><p>Folder 01 is Claude's intelligence layer. Code access will auto-generate workflow docs.</p></div>
+    </div>
+  </div>
+
+  <!-- CONNECTED SYSTEMS -->
+  <div class="section-label">Connected Systems</div>
+  <div class="systems-row">
+    <div class="sys-card c-drive">
+      <div class="sys-icon">📁</div>
+      <div class="sys-name">Google Drive</div>
+      <ul class="sys-owns">
+        <li>Master context files</li><li>Living SOPs</li><li>Working drafts</li><li>All assets</li>
+      </ul>
+      <span class="sys-status status-pending">⏳ Being Created</span>
+    </div>
+    <div class="sys-card c-conf">
+      <div class="sys-icon">📘</div>
+      <div class="sys-name">Confluence</div>
+      <ul class="sys-owns">
+        <li>Formal feature specs</li><li>JIRA-linked epics</li><li>Architecture decisions</li><li>Release notes</li>
+      </ul>
+      <span class="sys-status status-live">✓ Connected</span>
+    </div>
+    <div class="sys-card c-jira">
+      <div class="sys-icon">📌</div>
+      <div class="sys-name">JIRA</div>
+      <ul class="sys-owns">
+        <li>Epics & stories</li><li>Sprint planning</li><li>Bug tracking</li><li>Acceptance criteria</li>
+      </ul>
+      <span class="sys-status status-live">✓ Connected</span>
+    </div>
+    <div class="sys-card c-gh">
+      <div class="sys-icon">⚙️</div>
+      <div class="sys-name">GitHub</div>
+      <ul class="sys-owns">
+        <li>ILIA codebase mirror</li><li>All source code</li><li>API layer</li><li>Referenced from 01</li>
+      </ul>
+      <span class="sys-status status-pending">⏳ Mohit Delivering</span>
+    </div>
+    <div class="sys-card c-claude">
+      <div class="sys-icon">🤖</div>
+      <div class="sys-name">Claude AI</div>
+      <ul class="sys-owns">
+        <li>Reads Intelligence Layer</li><li>PM & workflow assistant</li><li>Generates Confluence docs</li><li>Extracts flows from code</li>
+      </ul>
+      <span class="sys-status status-live">✓ Active</span>
+    </div>
+  </div>
+
+  <!-- DRIVE STRUCTURE -->
+  <div class="section-label">Google Drive — Full End-State Structure <span style="font-size:10px;color:var(--blue-mid);margin-left:6px;font-family:'DM Sans',sans-serif;font-weight:600;text-transform:none;letter-spacing:0;">Click folders to expand</span></div>
+
+  <div class="drive-wrap">
+    <div class="drive-topbar">
+      <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M2 12L6 5L10 12H2Z" fill="#34A853"/><path d="M6 5L12 5L16 12H10L6 5Z" fill="#4285F4"/><path d="M2 12H16L14 15H4L2 12Z" fill="#FBBC05"/></svg>
+      <span class="dtitle">ILIA Central Intelligence</span>
+      <span class="dsub">Shared Drive · NIW Companies / Simplicity Group</span>
+    </div>
+    <div class="drive-body" id="driveBody">
+
+      <!-- 00 STAGING -->
+      <div class="tl-folder">
+        <div class="tl-header" onclick="toggle(this)">
+          <div class="tl-left">
+            <span class="tl-num">00</span>
+            <div class="folder-icon-wrap fi-staging">📥</div>
+            <div><div class="tl-name">Staging</div><span class="tl-tag tag-buffer">Intake Buffer</span></div>
+          </div>
+          <div class="tl-right">
+            <div class="chip-wrap">
+              <span class="chip">Drop new files here</span>
+              <span class="chip">Admin reviews &amp; places</span>
+              <span class="chip">Never a permanent home</span>
+            </div>
+            <span class="expand-icon">›</span>
+          </div>
+        </div>
+        <div class="subfolder-panel">
+          <div class="simple-sublist" style="padding:14px 20px 14px 60px;">
+            <div class="sub-item"><span class="item-dot" style="background:var(--staging);"></span> Unsorted Uploads</div>
+            <div class="sub-item"><span class="item-dot" style="background:var(--staging);"></span> Pending Review</div>
+          </div>
+          <div style="padding:0 20px 14px 60px;font-size:11.5px;color:var(--muted);">Files in Staging are temporary. Admin assigns them a permanent folder before they are considered part of the intelligence hub.</div>
+        </div>
+      </div>
+
+      <!-- 01 INTELLIGENCE LAYER -->
+      <div class="tl-folder">
+        <div class="tl-header" onclick="toggle(this)">
+          <div class="tl-left">
+            <span class="tl-num">01</span>
+            <div class="folder-icon-wrap fi-intel">🧠</div>
+            <div><div class="tl-name">Intelligence Layer</div><span class="tl-tag tag-ai">Claude reads this</span></div>
+          </div>
+          <div class="tl-right">
+            <div class="chip-wrap">
+              <span class="chip">ILIA-Master-Context.md</span>
+              <span class="chip">Architecture</span>
+              <span class="chip">Data Models</span>
+              <span class="chip">API Docs</span>
+              <span class="chip">Integrations</span>
+              <span class="chip">Glossary</span>
+            </div>
+            <span class="expand-icon">›</span>
+          </div>
+        </div>
+        <div class="subfolder-panel">
+          <div class="simple-sublist">
+            <div class="sub-item"><span class="item-dot live"></span> ILIA-Master-Context.md</div>
+            <div class="sub-item"><span class="item-dot" style="background:var(--blue-mid)"></span> Platform Architecture Overview</div>
+            <div class="sub-item"><span class="item-dot" style="background:var(--blue-mid)"></span> Database Schema &amp; Data Models</div>
+            <div class="sub-item"><span class="item-dot" style="background:var(--blue-mid)"></span> API Documentation</div>
+            <div class="sub-item"><span class="item-dot" style="background:var(--blue-mid)"></span> Integration Reference (Carriers, eSign, Banking)</div>
+            <div class="sub-item"><span class="item-dot" style="background:var(--blue-mid)"></span> Glossary &amp; Terminology</div>
+            <div class="sub-item"><span class="item-dot" style="background:var(--blue-mid)"></span> Role &amp; Permissions Map</div>
+            <div class="sub-item is-pending"><span class="item-dot"></span> GitHub Codebase Reference (via Mohit)</div>
+          </div>
+          <div style="padding:4px 20px 14px 60px;font-size:11.5px;color:var(--muted);">🤖 Claude reads every file in this folder to maintain full platform context. Once GitHub is connected, Claude will auto-extract workflows and populate Folder 02.</div>
+        </div>
+      </div>
+
+      <!-- 02 WORKFLOWS & SOPs -->
+      <div class="tl-folder">
+        <div class="tl-header" onclick="toggle(this)">
+          <div class="tl-left">
+            <span class="tl-num">02</span>
+            <div class="folder-icon-wrap fi-sop">⚙️</div>
+            <div><div class="tl-name">Workflows &amp; SOPs</div><span class="tl-tag tag-ops">Living Operational Docs</span></div>
+          </div>
+          <div class="tl-right">
+            <div class="chip-wrap">
+              <span class="chip">By User Role</span>
+              <span class="chip">By Process</span>
+              <span class="chip">By Integration</span>
+              <span class="chip pending">~30–50 flows when complete</span>
+            </div>
+            <span class="expand-icon">›</span>
+          </div>
+        </div>
+        <div class="subfolder-panel">
+
+          <!-- By User Role -->
+          <div class="sub-category">
+            <div class="sub-cat-header" onclick="toggleSub(this)">
+              <span class="sub-cat-icon">👥</span>
+              <span class="sub-cat-name">By User Role</span>
+              <span class="sub-cat-count">6 role groups</span>
+              <span class="sub-expand">›</span>
+            </div>
+            <div class="sub-items">
+              <div class="sub-item"><span class="item-dot live"></span> Agent Flows</div>
+              <div class="sub-item"><span class="item-dot live"></span> Client / Insured Flows</div>
+              <div class="sub-item"><span class="item-dot live"></span> Admin Flows</div>
+              <div class="sub-item"><span class="item-dot live"></span> Trustee Flows</div>
+              <div class="sub-item"><span class="item-dot live"></span> IMO / Aggregator Flows</div>
+              <div class="sub-item"><span class="item-dot live"></span> Carrier Flows</div>
+            </div>
+          </div>
+
+          <!-- By Process -->
+          <div class="sub-category">
+            <div class="sub-cat-header" onclick="toggleSub(this)">
+              <span class="sub-cat-icon">🔄</span>
+              <span class="sub-cat-name">By Process</span>
+              <span class="sub-cat-count">10+ documented · more via code extraction</span>
+              <span class="sub-expand">›</span>
+            </div>
+            <div class="sub-items">
+              <div class="sub-item"><span class="item-dot live"></span> Enrollment Workflow</div>
+              <div class="sub-item"><span class="item-dot live"></span> DBR (Deferred Benefit Request)</div>
+              <div class="sub-item"><span class="item-dot live"></span> eApplication Workflow</div>
+              <div class="sub-item"><span class="item-dot live"></span> Agent Onboarding</div>
+              <div class="sub-item"><span class="item-dot live"></span> Premium Finance &amp; Tranche Operations</div>
+              <div class="sub-item"><span class="item-dot live"></span> Trust &amp; Settlor Setup</div>
+              <div class="sub-item"><span class="item-dot live"></span> Servicing Workflow</div>
+              <div class="sub-item"><span class="item-dot live"></span> Document &amp; Signature Workflow</div>
+              <div class="sub-item"><span class="item-dot live"></span> Notifications &amp; Status Tracking</div>
+              <div class="sub-item"><span class="item-dot live"></span> Kai-Zen Strategy Workflow</div>
+              <div class="sub-item"><span class="item-dot live"></span> IUL Product Flows</div>
+              <div class="sub-item is-pending"><span class="item-dot"></span> + Additional flows extracted from codebase</div>
+            </div>
+          </div>
+
+          <!-- By Integration -->
+          <div class="sub-category">
+            <div class="sub-cat-header" onclick="toggleSub(this)">
+              <span class="sub-cat-icon">🔗</span>
+              <span class="sub-cat-name">By Integration</span>
+              <span class="sub-cat-count">4 integration areas</span>
+              <span class="sub-expand">›</span>
+            </div>
+            <div class="sub-items">
+              <div class="sub-item"><span class="item-dot live"></span> Carrier Integrations</div>
+              <div class="sub-item"><span class="item-dot live"></span> Banking &amp; Tranche System</div>
+              <div class="sub-item"><span class="item-dot live"></span> eSign Integrations</div>
+              <div class="sub-item"><span class="item-dot live"></span> API &amp; Data Sync Flows</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 03 ACTIVE PROJECTS -->
+      <div class="tl-folder">
+        <div class="tl-header" onclick="toggle(this)">
+          <div class="tl-left">
+            <span class="tl-num">03</span>
+            <div class="folder-icon-wrap fi-projects">🚀</div>
+            <div><div class="tl-name">Active Projects</div><span class="tl-tag tag-working">Working Files · Specs live in Confluence</span></div>
+          </div>
+          <div class="tl-right">
+            <div class="chip-wrap">
+              <span class="chip">Master Settlor Portal</span>
+              <span class="chip">DBR Automation</span>
+              <span class="chip">IUL LifeLink</span>
+              <span class="chip">Paper App Workflow</span>
+            </div>
+            <span class="expand-icon">›</span>
+          </div>
+        </div>
+        <div class="subfolder-panel">
+          <div class="simple-sublist">
+            <div class="sub-item"><span class="item-dot live"></span> Master Settlor Portal</div>
+            <div class="sub-item"><span class="item-dot live"></span> DBR Automation</div>
+            <div class="sub-item"><span class="item-dot live"></span> IUL LifeLink Integration</div>
+            <div class="sub-item"><span class="item-dot live"></span> Paper Application Workflow</div>
+            <div class="sub-item is-pending"><span class="item-dot"></span> Future projects added as initiated</div>
+          </div>
+          <div style="padding:4px 20px 14px 60px;font-size:11.5px;color:var(--muted);">Each project subfolder holds working briefs, meeting notes, and decision logs. Formal specs and JIRA-linked requirements live in Confluence — Drive links out to them.</div>
+        </div>
+      </div>
+
+      <!-- 04 DESIGN SYSTEM -->
+      <div class="tl-folder">
+        <div class="tl-header" onclick="toggle(this)">
+          <div class="tl-left">
+            <span class="tl-num">04</span>
+            <div class="folder-icon-wrap fi-design">🎨</div>
+            <div><div class="tl-name">Design System</div><span class="tl-tag tag-design">UI/UX Assets</span></div>
+          </div>
+          <div class="tl-right">
+            <div class="chip-wrap">
+              <span class="chip">ILIA Design Guide</span>
+              <span class="chip">Brand Style Guide</span>
+              <span class="chip">Component Library</span>
+              <span class="chip">Prototypes</span>
+            </div>
+            <span class="expand-icon">›</span>
+          </div>
+        </div>
+        <div class="subfolder-panel">
+          <div class="simple-sublist">
+            <div class="sub-item"><span class="item-dot live"></span> ILIA Design Guide (Material Design 3)</div>
+            <div class="sub-item"><span class="item-dot live"></span> Simplicity Group Brand Style Guide</div>
+            <div class="sub-item"><span class="item-dot live"></span> Component Library &amp; Tokens</div>
+            <div class="sub-item"><span class="item-dot live"></span> Prototypes &amp; Mockups</div>
+            <div class="sub-item"><span class="item-dot live"></span> Screen Flows &amp; Wireframes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 MARKETING & AGENT ASSETS -->
+      <div class="tl-folder">
+        <div class="tl-header" onclick="toggle(this)">
+          <div class="tl-left">
+            <span class="tl-num">05</span>
+            <div class="folder-icon-wrap fi-marketing">📣</div>
+            <div><div class="tl-name">Marketing &amp; Agent Assets</div><span class="tl-tag tag-assets">Distribution Resources</span></div>
+          </div>
+          <div class="tl-right">
+            <div class="chip-wrap">
+              <span class="chip">PDFs &amp; Flyers</span>
+              <span class="chip">Videos</span>
+              <span class="chip">Agent Materials</span>
+              <span class="chip">Carrier Info</span>
+            </div>
+            <span class="expand-icon">›</span>
+          </div>
+        </div>
+        <div class="subfolder-panel">
+          <div class="simple-sublist">
+            <div class="sub-item"><span class="item-dot live"></span> PDFs &amp; Flyers</div>
+            <div class="sub-item"><span class="item-dot live"></span> Videos &amp; Presentations</div>
+            <div class="sub-item"><span class="item-dot live"></span> Agent-Facing Materials</div>
+            <div class="sub-item"><span class="item-dot live"></span> Carrier Information Sheets</div>
+            <div class="sub-item"><span class="item-dot live"></span> Kai-Zen &amp; IUL Product Materials</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 06 TEAM & OPERATIONS -->
+      <div class="tl-folder">
+        <div class="tl-header" onclick="toggle(this)">
+          <div class="tl-left">
+            <span class="tl-num">06</span>
+            <div class="folder-icon-wrap fi-team">📋</div>
+            <div><div class="tl-name">Team &amp; Operations</div><span class="tl-tag tag-ref">Internal Reference</span></div>
+          </div>
+          <div class="tl-right">
+            <div class="chip-wrap">
+              <span class="chip">Meeting Notes</span>
+              <span class="chip">Decision Log</span>
+              <span class="chip">Agent Guide</span>
+              <span class="chip">Trust &amp; Legal</span>
+            </div>
+            <span class="expand-icon">›</span>
+          </div>
+        </div>
+        <div class="subfolder-panel">
+          <div class="simple-sublist">
+            <div class="sub-item"><span class="item-dot live"></span> Meeting Notes &amp; Decision Log</div>
+            <div class="sub-item"><span class="item-dot live"></span> Agent Guide</div>
+            <div class="sub-item"><span class="item-dot live"></span> Trust &amp; Legal Templates</div>
+            <div class="sub-item"><span class="item-dot live"></span> Compliance Reference</div>
+            <div class="sub-item"><span class="item-dot live"></span> Onboarding Materials (Internal)</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /drive-body -->
+  </div><!-- /drive-wrap -->
+
+  <!-- BUILD ORDER -->
+  <div class="section-label">Build Order</div>
+  <div class="build-order">
+    <div class="build-step done">
+      <div class="step-num">01</div>
+      <div class="step-title">Design Structure</div>
+      <div class="step-desc">Folder architecture designed &amp; approved with governance model</div>
+      <span class="step-badge sb-done">✓ Done</span>
+    </div>
+    <div class="build-step active">
+      <div class="step-num">02</div>
+      <div class="step-title">Create Shared Drive</div>
+      <div class="step-desc">Create empty "ILIA Central Intelligence" Shared Drive with folder structure</div>
+      <span class="step-badge sb-now">Now</span>
+    </div>
+    <div class="build-step">
+      <div class="step-num">03</div>
+      <div class="step-title">Migrate Files</div>
+      <div class="step-desc">Move existing files from My Project Prototypes into correct folders</div>
+      <span class="step-badge sb-wait">Next</span>
+    </div>
+    <div class="build-step">
+      <div class="step-num">04</div>
+      <div class="step-title">Update Claude</div>
+      <div class="step-desc">Update Claude Project Instructions to read from new Drive location</div>
+      <span class="step-badge sb-wait">Pending</span>
+    </div>
+    <div class="build-step">
+      <div class="step-num">05</div>
+      <div class="step-title">Connect GitHub</div>
+      <div class="step-desc">Link Mohit's mirror — Claude extracts all flows from codebase</div>
+      <span class="step-badge sb-wait">Mohit</span>
+    </div>
+    <div class="build-step">
+      <div class="step-num">06</div>
+      <div class="step-title">Share with Team</div>
+      <div class="step-desc">Grant view access to NIW team. Contributors get folder-specific edit rights</div>
+      <span class="step-badge sb-wait">Final</span>
+    </div>
+  </div>
+
+  <!-- GROUND RULES -->
+  <div class="section-label">Ground Rules</div>
+  <div class="rules-grid">
+    <div class="rule-card">
+      <h4>📁 What lives in Drive</h4>
+      <ul>
+        <li>ILIA-Master-Context.md — primary AI context file</li>
+        <li>Living SOPs updated regularly</li>
+        <li>Working drafts before they become formal specs</li>
+        <li>Design assets, prototypes, PDFs, videos</li>
+        <li>Meeting notes and decision logs</li>
+        <li>Agent, carrier, and marketing materials</li>
+      </ul>
+    </div>
+    <div class="rule-card">
+      <h4>📘 What lives in Confluence</h4>
+      <ul>
+        <li>Formal feature specifications</li>
+        <li>Epics with JIRA ticket links</li>
+        <li>Architecture decision records (ADRs)</li>
+        <li>Release notes and changelogs</li>
+        <li>Anything needing structured comment threads</li>
+        <li>Confluence can link to Drive — not duplicate it</li>
+      </ul>
+    </div>
+    <div class="rule-card">
+      <h4>🤖 How Claude uses this Drive</h4>
+      <ul>
+        <li>Reads Folder 01 to maintain full ILIA platform context</li>
+        <li>Once GitHub arrives — extracts all user flows from routes, APIs, and DB models</li>
+        <li>Auto-populates Folder 02 with workflow docs from code</li>
+        <li>Generates Confluence-ready specs and JIRA stories</li>
+        <li>Acts as PM, workflow architect, and technical analyst</li>
+      </ul>
+    </div>
+    <div class="rule-card">
+      <h4>🚫 Non-Negotiables</h4>
+      <ul>
+        <li>No file lives in both Drive and Confluence</li>
+        <li>No adding files without a designated folder</li>
+        <li>Staging is temporary — never a permanent home</li>
+        <li>Structure approved before anything is created</li>
+        <li>Folder 02 expands after code review — not before</li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  ILIA Central Intelligence Hub · NIW Companies / Simplicity Group ·
+  <a href="https://simplicitygh.atlassian.net">Confluence</a> ·
+  <a href="https://github.com/jaminaustinsimplicity/ilia-central-intelligence">GitHub</a>
+</footer>
+
+<script>
+  function toggle(header) {
+    header.classList.toggle('open');
+    const panel = header.nextElementSibling;
+    panel.classList.toggle('open');
+  }
+  function toggleSub(header) {
+    header.classList.toggle('open');
+    const items = header.nextElementSibling;
+    items.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
