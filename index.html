@@ -455,7 +455,7 @@
     </div>
 
     <div class="conn-card conn-pending">
-      <div class="conn-icon" style="background:#fff;padding:2px;">
+      <div class="conn-icon" style="cursor:pointer;" onclick="openConnModal('ilia-codebase')" title="Click to learn more">
         <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <text x="2" y="28" font-family="Arial Black,sans-serif" font-weight="900" font-size="22" fill="#0076BD">ilia</text>
           <circle cx="7" cy="33" r="3" fill="#0076BD"/>
@@ -464,7 +464,7 @@
           <circle cx="37" cy="33" r="3" fill="#F4A623"/>
         </svg>
       </div>
-      <div class="conn-name">ILIA Codebase <span style="font-size:11px;font-weight:500;color:var(--blue-mid);">(A personal Brad on your computer)</span></div>
+      <div class="conn-name" style="cursor:pointer;" onclick="openConnModal('ilia-codebase')">ILIA Codebase <span style="font-size:11px;font-weight:500;color:var(--blue-mid);">(A personal Brad on your computer)</span> <span style="font-size:10px;opacity:0.6;">ⓘ</span></div>
       <div class="conn-desc">Backend + frontend repos — unlocks full code-aware AI assistance</div>
       <span class="conn-status cs-pending">⏳ Pending Mirror</span>
       <a class="conn-link" href="https://github.com/NIWCompanies-ILIA-Central-Intelligence/ilia-backend" target="_blank">GitHub Repo →</a>
