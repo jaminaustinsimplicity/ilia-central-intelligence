@@ -551,6 +551,7 @@
 
   </div>
 
+
   <!-- ONBOARDING GUIDE -->
   <div class="section-label">
     Claude ↔ ILIA Intelligence Hub — Onboarding Guide
@@ -561,20 +562,26 @@
     <div class="onboard-header">
       <div>
         <h3>Getting Connected to the ILIA Intelligence Hub</h3>
-        <p>Follow these steps to get your Claude account fully connected to the NIW ILIA platform</p>
+        <p>Two phases — Phase 1 is available now. Phase 2 coming as the CIH Portal is built out.</p>
       </div>
-      <span class="onboard-badge">⏳ Hub in active build — full onboarding available when ready</span>
+      <span class="onboard-badge">Phase 1 Active · Phase 2 In Development</span>
     </div>
     <div class="onboard-steps">
+
+      <!-- PHASE 1 HEADER -->
+      <div style="background:var(--blue-pale);border-bottom:1px solid var(--border);padding:12px 22px;display:flex;align-items:center;gap:10px;">
+        <span style="background:var(--blue-mid);color:white;font-size:11px;font-weight:700;padding:3px 12px;border-radius:10px;">PHASE 1</span>
+        <span style="font-weight:700;font-size:13px;color:var(--blue-deep);">Simplicity Claude Account — Shared ILIA Project</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--green);font-weight:700;background:var(--green-pale);padding:3px 10px;border-radius:10px;">✓ Available Now</span>
+      </div>
 
       <div class="onboard-step">
         <div class="step-num-wrap"><div class="step-num-circle snc-done">1</div></div>
         <div class="step-content">
-          <div class="step-title">Create Your Anthropic / Claude Account</div>
-          <div class="step-desc">Sign up for Claude at claude.ai using your NIW work email address. If your organization moves to Claude Team or Enterprise, you'll receive an invite — use that instead.</div>
+          <div class="step-title">Log Into Your Simplicity Claude Account</div>
+          <div class="step-desc">Sign in at claude.ai using your Simplicity Group work email. Make sure you're on the <strong>Simplicity Group · Team plan</strong> — visible at the bottom left of the screen.</div>
           <div class="step-actions">
             <a href="https://claude.ai/login" target="_blank" class="step-btn btn-primary">→ Go to claude.ai</a>
-            <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">Account Settings</a>
           </div>
         </div>
       </div>
@@ -582,10 +589,10 @@
       <div class="onboard-step">
         <div class="step-num-wrap"><div class="step-num-circle snc-done">2</div></div>
         <div class="step-content">
-          <div class="step-title">Install Claude Desktop (Optional but Recommended)</div>
-          <div class="step-desc">Download Claude for Mac or Windows for the best experience. Works alongside the web version — same account, same projects.</div>
+          <div class="step-title">Open the ILIA Central Intelligence Project</div>
+          <div class="step-desc">Click <strong>Projects</strong> in the left sidebar → click the <strong>Shared with you</strong> tab → open <strong>ILIA Central Intelligence</strong>. This is the shared project with full ILIA platform context, GitHub access, JIRA, Confluence, and all connectors pre-configured.</div>
           <div class="step-actions">
-            <a href="https://claude.ai/download" target="_blank" class="step-btn btn-primary">→ Download Claude</a>
+            <a href="https://claude.ai" target="_blank" class="step-btn btn-primary">→ Open Claude Projects</a>
           </div>
         </div>
       </div>
@@ -593,50 +600,81 @@
       <div class="onboard-step">
         <div class="step-num-wrap"><div class="step-num-circle snc-done">3</div></div>
         <div class="step-content">
-          <div class="step-title">Install Claude in Chrome Extension</div>
-          <div class="step-desc">Enables Claude to see and interact with your browser — navigate pages, click buttons, and assist with web-based workflows in ILIA and other tools.</div>
+          <div class="step-title">Enable Your Connectors</div>
+          <div class="step-desc">In Claude Settings → Connectors, connect your personal tools. The shared project tools (JIRA, Confluence, GitHub) are already configured — you just need your own Gmail, Drive, and Calendar.</div>
+          <div class="step-actions" style="flex-wrap:wrap;gap:6px;">
+            <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">📧 Gmail</a>
+            <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">📁 Google Drive</a>
+            <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">📅 Calendar</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="onboard-step">
+        <div class="step-num-wrap"><div class="step-num-circle snc-done">4</div></div>
+        <div class="step-content">
+          <div class="step-title">Install Claude in Chrome (Recommended)</div>
+          <div class="step-desc">Install the Claude Chrome extension to enable browser automation — Claude can navigate pages, click buttons, and assist with ILIA and other web-based workflows directly.</div>
           <div class="step-actions">
             <a href="https://chromewebstore.google.com/search/claude" target="_blank" class="step-btn btn-primary">→ Chrome Web Store</a>
           </div>
         </div>
       </div>
 
-      <div class="onboard-step">
-        <div class="step-num-wrap"><div class="step-num-circle snc-active">4</div></div>
+      <div class="onboard-step" style="border-bottom:none;">
+        <div class="step-num-wrap"><div class="step-num-circle snc-done">5</div></div>
         <div class="step-content">
-          <div class="step-title">Enable Required Connectors</div>
-          <div class="step-desc">In Claude Settings → Connectors, enable each of the following. These allow Claude to read and act across NIW tools.</div>
-          <div class="step-actions" style="flex-direction:column;gap:6px;">
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">📧 Gmail</a>
-              <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">📁 Google Drive</a>
-              <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">📅 Google Calendar</a>
-              <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">📌 JIRA (Atlassian)</a>
-              <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">📘 Confluence</a>
-              <a href="https://claude.ai/settings" target="_blank" class="step-btn btn-secondary">⚙️ GitHub</a>
-            </div>
+          <div class="step-title">Start Working — You're Connected</div>
+          <div class="step-desc">Open any chat inside the ILIA Central Intelligence project and start working. Claude already knows the full ILIA platform, your team, active projects, and all connected tools. Example prompts to get started:</div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+            <div style="background:var(--off-white);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--muted);font-style:italic;">"Create a new prototype called ilia-[name] and push it to the NIW GitHub org"</div>
+            <div style="background:var(--off-white);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--muted);font-style:italic;">"What's the current status of the DBR project and are there any open blockers?"</div>
+            <div style="background:var(--off-white);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--muted);font-style:italic;">"Create a JIRA ticket for [feature] with acceptance criteria"</div>
           </div>
         </div>
       </div>
 
-      <div class="onboard-step">
-        <div class="step-num-wrap"><div class="step-num-circle snc-wait">5</div></div>
-        <div class="step-content">
-          <div class="step-title">Join the ILIA Central Intelligence Claude Project</div>
-          <div class="step-desc">Once the NIW Claude Team plan is active, you'll receive an invite to the shared ILIA CIH Project. This gives your Claude account full ILIA platform context — workflows, architecture, SOPs, and agent configurations. Until then, Jamin will share the project instruction packet with you directly.</div>
-          <div class="step-actions">
-            <a href="https://claude.ai" target="_blank" class="step-btn btn-secondary">○ Pending Team Plan</a>
-          </div>
-        </div>
+      <!-- PHASE 2 HEADER -->
+      <div style="background:var(--purple-pale);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 22px;display:flex;align-items:center;gap:10px;">
+        <span style="background:var(--purple);color:white;font-size:11px;font-weight:700;padding:3px 12px;border-radius:10px;">PHASE 2</span>
+        <span style="font-weight:700;font-size:13px;color:var(--purple);">ILIA CIH Portal — Role-Configured Web Stations</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--purple);font-weight:700;background:var(--purple-pale);padding:3px 10px;border-radius:10px;border:1px solid rgba(124,58,237,0.2);">🏗️ In Development</span>
       </div>
 
       <div class="onboard-step">
         <div class="step-num-wrap"><div class="step-num-circle snc-wait">6</div></div>
         <div class="step-content">
-          <div class="step-title">Select Your Agent Role</div>
-          <div class="step-desc">Once in the project, select the agent configuration for your role — Operations, Marketing, Customer Service, Dev Assistant, or Onboarding. Each is pre-configured with the right context, tone, and tool access for your function.</div>
+          <div class="step-title">Get Your CIH Portal Invite</div>
+          <div class="step-desc">When the ILIA CIH Portal launches, each employee will receive an invite to their role-configured workspace. Your seat type (Operations, Support, Sales, Marketing, Dev, Admin) determines your personalized dashboard and tools.</div>
           <div class="step-actions">
-            <a href="#agents" class="step-btn btn-secondary">○ See Agent Directory below</a>
+            <a href="https://niwcompanies-ilia-central-intelligence.github.io/ilia-cih-portal/" target="_blank" class="step-btn btn-secondary">○ View Portal Vision →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="onboard-step">
+        <div class="step-num-wrap"><div class="step-num-circle snc-wait">7</div></div>
+        <div class="step-content">
+          <div class="step-title">Log Into Your Role Dashboard</div>
+          <div class="step-desc">A branded NIW web app — your role-specific dashboard with AI chat, connected tools, and panels built for your function. Operations sees JIRA queues and SOPs. Support sees client flows. Marketing sees asset library and campaign tools. No Claude.ai needed.</div>
+          <div class="step-actions">
+            <span class="step-btn btn-secondary" style="opacity:0.5;cursor:default;">○ Coming Soon</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="onboard-step" style="border-bottom:none;">
+        <div class="step-num-wrap"><div class="step-num-circle snc-wait">8</div></div>
+        <div class="step-content">
+          <div class="step-title">Work From Your Station</div>
+          <div class="step-desc">Phase 2 replaces the need to work inside Claude.ai directly. Your CIH Portal station is your daily workspace — all intelligence, all tools, all context — in one NIW-owned platform purpose-built for your role.</div>
+          <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">
+            <span style="background:var(--blue-pale);color:var(--blue-mid);font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;">Operations</span>
+            <span style="background:var(--green-pale);color:var(--green);font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;">Support</span>
+            <span style="background:var(--amber-pale);color:#9B5500;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;">Sales</span>
+            <span style="background:#FFF3E0;color:#C05000;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;">Marketing</span>
+            <span style="background:var(--purple-pale);color:var(--purple);font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;">Dev / PM</span>
+            <span style="background:var(--off-white);color:var(--ink);font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;border:1px solid var(--border);">Admin</span>
           </div>
         </div>
       </div>
