@@ -370,10 +370,6 @@
   .cih-save-btn { padding: 6px 16px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: var(--blue-mid); color: white; }
   .cih-cancel-btn { padding: 6px 16px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--off-white); color: var(--muted); }
 
-
-  .modal-overlay { display:none;position:fixed;inset:0;background:rgba(0,20,40,0.7);z-index:1000;align-items:center;justify-content:center;padding:20px; }
-  .modal-overlay.open { display:flex; }
-
 </style>
 </head>
 <body>
@@ -1150,13 +1146,7 @@
 
 
 <!-- CONNECTION CARD DETAIL MODAL -->
-<div class="modal-overlay" id="connModal" onclick="if(event.target===this)closeConnModal()">
-  <div style="background:var(--white);border-radius:14px;max-width:600px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.25);">
-    <div style="padding:22px 26px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1;">
-      <div>
-        <div id="conn-modal-status"></div>
-        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);line-height:1.2;" id="conn-modal-title"></div>
-      </div>
+
       <button onclick="closeConnModal()" style="font-size:20px;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px;line-height:1;">✕</button>
     </div>
     <div style="padding:22px 26px 26px;">
@@ -1170,79 +1160,113 @@
 </div>
 
 
+
+<div id="connModal" style="display:none;position:fixed;inset:0;background:rgba(0,20,40,0.72);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:14px;max-width:620px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.28);">
+    <div style="padding:22px 26px 16px;border-bottom:1px solid #D4DFE9;display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;">
+      <div><div id="cmi-status"></div><div id="cmi-title" style="font-family:'DM Serif Display',serif;font-size:22px;color:#0D1F2D;line-height:1.2;"></div></div>
+      <button onclick="closeConnModal()" style="font-size:22px;color:#6B7E8F;background:none;border:none;cursor:pointer;padding:2px 6px;line-height:1;flex-shrink:0;">&times;</button>
+    </div>
+    <div style="padding:22px 26px 28px;">
+      <div id="cmi-desc" style="font-size:13.5px;color:#6B7E8F;line-height:1.65;margin-bottom:18px;"></div>
+      <p style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#6B7E8F;margin-bottom:8px;">What CIH Users Can Do</p>
+      <ul id="cmi-caps" style="list-style:none;margin-bottom:4px;"></ul>
+      <div id="cmi-layers" style="display:none;"></div>
+      <div id="cmi-links" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</div>
 <script>
-  // ── CONNECTION CARD MODALS ──────────────────────────────
-  const CONN_MODALS = {
-    'claude-ai': { title:'Claude AI', status:'✓ Connected', statusStyle:'background:var(--green-pale);color:var(--green);', desc:'The intelligence engine powering the entire ILIA CIH. Claude AI reads all connected sources and acts as PM assistant, workflow architect, developer, and analyst.', capabilities:['Create and push prototypes to the NIW GitHub org','Read and update JIRA tickets and epics','Generate Confluence-ready documentation','Analyze ILIA codebase for workflows and architecture','Draft emails, messages, and SOPs','Answer any question about the ILIA platform'], layers:[], links:[{label:'Open Claude',url:'https://claude.ai'}] },
-    'jira': { title:'JIRA', status:'✓ Connected', statusStyle:'background:var(--green-pale);color:var(--green);', desc:'Sprint planning, epics, stories, bug tracking, and acceptance criteria for all ILIA platform development.', capabilities:['Create JIRA tickets with full acceptance criteria','Update ticket status, assignee, and priority','Query open tickets and sprint backlog','Link tickets to Confluence specs','Generate sprint summaries and release notes'], layers:[], links:[{label:'Open JIRA',url:'https://simplicitygh.atlassian.net/jira'}] },
-    'confluence': { title:'Confluence', status:'✓ Connected', statusStyle:'background:var(--green-pale);color:var(--green);', desc:'Formal feature specifications, architecture decisions, JIRA-linked requirements, and release documentation.', capabilities:['Create and update Confluence pages','Generate formal feature specs from requirements','Document architecture decisions','Publish release notes and changelogs','Search across all ILIA documentation'], layers:[], links:[{label:'Open Confluence',url:'https://simplicitygh.atlassian.net'}] },
-    'github-org': { title:'GitHub Org', status:'✓ Live', statusStyle:'background:var(--green-pale);color:var(--green);', desc:'The NIW Companies GitHub organization housing all ILIA prototypes, the CIH hub, and the pending codebase mirror.', capabilities:['Create new prototype repos and push code','Deploy GitHub Pages sites with live URLs','Read codebase once Mohit mirror is complete','Manage repo access for team members'], layers:[], links:[{label:'Open GitHub Org',url:'https://github.com/NIWCompanies-ILIA-Central-Intelligence'}] },
-    'google-drive': { title:'Google Drive', status:'⚠️ Paused — Compliance Review', statusStyle:'background:var(--amber-pale);color:#9B5500;', desc:'Disconnected pending IT/compliance approval. When reconnected (scoped to ILIA CIH Shared Drive only), Claude can read context files, SOPs, design assets, and working documents.', capabilities:['Read ILIA Master Context and architecture docs','Access living SOPs and workflow documentation','Reference design assets and brand guidelines','NOTE: Client data and financial records must remain separate'], layers:[], links:[{label:'Open Drive',url:'https://drive.google.com'}] },
-    'gmail': { title:'Gmail', status:'✓ Connected', statusStyle:'background:var(--green-pale);color:var(--green);', desc:'Work inbox connected — Claude can read context from emails and create drafts. Claude cannot send emails directly, only create drafts for your review.', capabilities:['Draft reply emails for your review','Summarize email threads for context','Draft outreach emails to agents or carriers','Create email templates for operational workflows','CANNOT send emails — drafts only, you always review first'], layers:[], links:[{label:'Open Gmail',url:'https://mail.google.com'}] },
-    'bitbucket-mirror': { title:'Bitbucket Mirror', status:'⏳ Token Confirmed — Mirror Pending', statusStyle:'background:var(--amber-pale);color:#9B5500;', desc:'One-way auto-sync from Bitbucket (source of truth) to GitHub. Once live, Claude gains full read access to the ILIA codebase.', capabilities:['Read all ILIA business logic and API endpoints','Extract complete workflow map from route definitions','Identify every email trigger in the system','Audit formulas and calculations','Identify technical debt and improvement opportunities'], layers:[], links:[{label:'JIRA: NIWD-1734',url:'https://simplicitygh.atlassian.net/browse/NIWD-1734'}] },
-    'ilia-codebase': { title:'ILIA Codebase', status:'⏳ Pending Mirror', statusStyle:'background:var(--amber-pale);color:#9B5500;', desc:'The full ILIA platform codebase — frontend and backend. Once the Bitbucket mirror is complete, this becomes the most powerful intelligence source in the CIH.', capabilities:['Complete workflow extraction from all routes','Full formula and calculation audit','Email system inventory — every trigger and template','Database schema and relationship mapping','API endpoint documentation generation'], layers:[], links:[{label:'GitHub Backend',url:'https://github.com/NIWCompanies-ILIA-Central-Intelligence/ilia-backend'}] },
-    'local-dev': { title:'Local Dev Environment', status:'⏳ Pending IT Admin', statusStyle:'background:var(--amber-pale);color:#9B5500;', desc:'ILIA running locally enables a real-time PM prototyping workflow — describe a UI change in plain English, Claude writes the code, you see it update live.', capabilities:['Describe UI changes in plain English — Claude codes them','See ILIA update live in your browser instantly','Prototype new screens without developer bottleneck','Hand finished prototypes to developers as working code'], layers:[], links:[{label:'Track in JIRA',url:'https://simplicitygh.atlassian.net/jira'}] },
-    'claude-team': { title:'Claude Team Plan', status:'✓ Active — Simplicity Group', statusStyle:'background:var(--green-pale);color:var(--green);', desc:'Simplicity Group Claude Team plan is active. The ILIA Central Intelligence project is shared — you and Kyle are both connected with full capabilities.', capabilities:['Share projects across NIW team members','Shared context and connectors for all project members','Upload knowledge files visible to all members','Kyle connected — more team members can be added'], layers:[], links:[{label:'Claude Settings',url:'https://claude.ai/settings'}] },
-    'shared-drive': { title:'Shared NIW Drive', status:'○ Planned', statusStyle:'background:var(--off-white);color:var(--muted);border:1px solid var(--border);', desc:'A dedicated Google Shared Drive for ILIA Central Intelligence — separate from all company drives containing sensitive client/financial data.', capabilities:['Host ILIA Master Context and architecture docs','Store living SOPs and workflow documentation','Safely connect to Claude without exposing client data','Shared access for NIW team members'], layers:[], links:[{label:'Google Drive',url:'https://drive.google.com'}] },
-    'claude-chrome': { title:'Claude in Chrome', status:'✓ Connected', statusStyle:'background:var(--green-pale);color:var(--green);', desc:'Browser automation — Claude can see your screen, navigate pages, click buttons, and interact with web apps including ILIA, GitHub, JIRA, and Cloudflare.', capabilities:['Navigate to any URL and take actions on your behalf','Approve GitHub token requests and org settings','Interact with ILIA admin interface directly','Screenshot and analyze any web page'], layers:[], links:[{label:'Chrome Web Store',url:'https://chromewebstore.google.com/search/claude'}] },
-    'ilia-cih-portal': { title:'ILIA CIH Portal', status:'🏗️ In Development', statusStyle:'background:var(--purple-pale);color:var(--purple);', desc:'A branded AI operating platform — each NIW employee logs into their role-configured workspace. Operations, Support, Sales, Marketing, Dev, Admin each get a personalized dashboard powered by Claude.', capabilities:['Role-specific dashboards for all seat types','Login system with seat type assignment','Each seat pre-configured with relevant tools and context','No Claude.ai access needed — works as standalone NIW platform'], layers:[], links:[{label:'View Platform Vision',url:'https://niwcompanies-ilia-central-intelligence.github.io/ilia-cih-portal/'},{label:'Portal Demo',url:'https://niwcompanies-ilia-central-intelligence.github.io/ilia-cih-portal-demo/'}] },
-    'marketing-drive': { title:'Shared Marketing Drive', status:'⏳ Pending Connection', statusStyle:'background:var(--amber-pale);color:#9B5500;', desc:'ILIA/NIW marketing assets managed by Rahim — videos, images, flyers, campaign materials, and brand resources.', capabilities:['Access all ILIA/NIW marketing assets','Reference approved images and videos for campaigns','Future: Marketing seat users create/update assets from CIH Portal'], layers:[], links:[{label:'Google Drive',url:'https://drive.google.com'}] },
-    'strapi-cms': { title:'ILIA CMS — Strapi', status:'⏳ Pending API Token', statusStyle:'background:var(--amber-pale);color:#9B5500;', desc:'Powers all agent invitation landing pages and client-facing marketing pages. 21 configurations across carriers and product types.', capabilities:['Read all current landing page content by carrier and strategy','Understand what clients see when they click agent invitation links','Future: Marketing seat users edit and publish landing pages from CIH Portal','Future: Create new landing pages for new carriers/strategies'], layers:[], links:[{label:'Open Strapi',url:'https://strapi-projects.simplicityniw.com/'}] },
-    'build-engine': {
-      title: 'ILIA Native Build Engine',
-      status: '⚡ Partially Active',
-      statusStyle: 'background:var(--purple-pale);color:var(--purple);',
-      desc: 'The full capability to design, build, and deploy custom ILIA features using Claude + connected infrastructure. Replaces third-party tools like DocuSign with purpose-built native solutions owned entirely by NIW — including native eSign, PDF generation, document workflows, and more.',
-      capabilities: [
-        '🔧 Build native eSign — PDF generation, signature capture, multi-party routing, legal audit trail',
-        '🎨 Design and prototype new ILIA screens in plain English — Claude codes, you review live',
-        '⚙️ Extract every workflow, formula, and email trigger from the codebase once mirror is live',
-        '🚀 Deploy new features to production via GitHub Actions + AWS infrastructure',
-        '📋 Replace any third-party dependency with a purpose-built NIW-owned solution',
-        '🔍 Deep technical analysis — identify bugs, debt, and improvement opportunities'
+(function() {
+  var MODALS = {
+    "claude-ai":      {t:"Claude AI",              s:"Connected",         sc:"green",  d:"The intelligence engine powering the entire ILIA CIH. Reads all connected sources and acts as PM assistant, workflow architect, developer, and analyst.", caps:["Create and push prototypes to the NIW GitHub org","Read and update JIRA tickets and epics","Generate Confluence-ready documentation","Analyze ILIA codebase for workflows and architecture","Draft emails, messages, and SOPs","Answer any question about the ILIA platform"], lnks:[["Open Claude","https://claude.ai"]]},
+    "jira":           {t:"JIRA",                   s:"Connected",         sc:"green",  d:"Sprint planning, epics, stories, bug tracking, and acceptance criteria for all ILIA platform development.", caps:["Create JIRA tickets with full acceptance criteria","Update ticket status, assignee, and priority","Query open tickets and sprint backlog","Generate sprint summaries and release notes"], lnks:[["Open JIRA","https://simplicitygh.atlassian.net/jira"]]},
+    "confluence":     {t:"Confluence",             s:"Connected",         sc:"green",  d:"Formal feature specifications, architecture decisions, JIRA-linked requirements, and release documentation.", caps:["Create and update Confluence pages","Generate formal feature specs from requirements","Document architecture decisions","Publish release notes and changelogs"], lnks:[["Open Confluence","https://simplicitygh.atlassian.net"]]},
+    "github-org":     {t:"GitHub Org",             s:"Live",              sc:"green",  d:"The NIW Companies GitHub organization housing all ILIA prototypes, the CIH hub, and the pending codebase mirror.", caps:["Create new prototype repos and push code","Deploy GitHub Pages sites with live URLs","Read codebase once Mohit mirror is complete","Manage repo access for team members"], lnks:[["Open GitHub Org","https://github.com/NIWCompanies-ILIA-Central-Intelligence"]]},
+    "google-drive":   {t:"Google Drive",           s:"Paused — Compliance Review", sc:"amber", d:"Disconnected pending IT/compliance approval. When reconnected (scoped to ILIA CIH Shared Drive only), Claude can read context files, SOPs, design assets, and working documents.", caps:["Read ILIA Master Context and architecture docs","Access living SOPs and workflow documentation","Reference design assets and brand guidelines","NOTE: Client data and financial records must remain separate"], lnks:[["Open Drive","https://drive.google.com"]]},
+    "gmail":          {t:"Gmail",                  s:"Connected",         sc:"green",  d:"Work inbox connected. Claude can read context from emails and create drafts. Cannot send emails — drafts only, you always review first.", caps:["Draft reply emails for your review","Summarize email threads for context","Draft outreach emails to agents or carriers","Create email templates for operational workflows","CANNOT send emails — drafts only"], lnks:[["Open Gmail","https://mail.google.com"]]},
+    "bitbucket-mirror":{t:"Bitbucket Mirror",      s:"Token Confirmed — Mirror Pending", sc:"amber", d:"One-way auto-sync from Bitbucket (source of truth) to GitHub. Once live, Claude gains full read access to the ILIA codebase.", caps:["Read all ILIA business logic and API endpoints","Extract complete workflow map from route definitions","Identify every email trigger in the system","Audit formulas and calculations"], lnks:[["JIRA: NIWD-1734","https://simplicitygh.atlassian.net/browse/NIWD-1734"]]},
+    "ilia-codebase":  {t:"ILIA Codebase",          s:"Pending Mirror",    sc:"amber",  d:"The full ILIA platform codebase. Once the Bitbucket mirror is complete, this becomes the most powerful intelligence source in the CIH.", caps:["Complete workflow extraction from all routes","Full formula and calculation audit","Email system inventory","Database schema and relationship mapping","API endpoint documentation generation"], lnks:[["GitHub Backend","https://github.com/NIWCompanies-ILIA-Central-Intelligence/ilia-backend"]]},
+    "local-dev":      {t:"Local Dev Environment",  s:"Pending IT Admin",  sc:"amber",  d:"ILIA running locally enables a real-time PM prototyping workflow. Describe a UI change in plain English, Claude writes the code, you see it live.", caps:["Describe UI changes in plain English — Claude codes them","See ILIA update live in your browser instantly","Prototype new screens without developer bottleneck","Hand finished prototypes to developers as working code"], lnks:[["Track in JIRA","https://simplicitygh.atlassian.net/jira"]]},
+    "claude-team":    {t:"Claude Team Plan",       s:"Active — Simplicity Group", sc:"green", d:"Simplicity Group Claude Team plan is active. The ILIA Central Intelligence project is shared with you and Kyle.", caps:["Share projects across NIW team members","Shared context and connectors for all project members","Upload knowledge files visible to all members","Kyle connected — more team members can be added"], lnks:[["Claude Settings","https://claude.ai/settings"]]},
+    "shared-drive":   {t:"Shared NIW Drive",       s:"Planned",           sc:"muted",  d:"A dedicated Google Shared Drive for ILIA Central Intelligence — separate from all company drives containing sensitive data.", caps:["Host ILIA Master Context and architecture docs","Store living SOPs and workflow documentation","Safely connect to Claude without exposing client data"], lnks:[["Google Drive","https://drive.google.com"]]},
+    "claude-chrome":  {t:"Claude in Chrome",       s:"Connected",         sc:"green",  d:"Browser automation — Claude can see your screen, navigate pages, click buttons, and interact with web apps.", caps:["Navigate to any URL and take actions on your behalf","Interact with ILIA admin interface directly","Screenshot and analyze any web page"], lnks:[["Chrome Web Store","https://chromewebstore.google.com/search/claude"]]},
+    "ilia-cih-portal":{t:"ILIA CIH Portal",        s:"In Development",    sc:"purple", d:"A branded AI operating platform. Each NIW employee logs into their role-configured workspace — Operations, Support, Sales, Marketing, Dev, Admin.", caps:["Role-specific dashboards for all seat types","Login system with seat type assignment","Each seat pre-configured with relevant tools","No Claude.ai needed — standalone NIW platform"], lnks:[["View Platform Vision","https://niwcompanies-ilia-central-intelligence.github.io/ilia-cih-portal/"],["Portal Demo","https://niwcompanies-ilia-central-intelligence.github.io/ilia-cih-portal-demo/"]]},
+    "marketing-drive":{t:"Shared Marketing Drive", s:"Pending Connection", sc:"amber",  d:"ILIA/NIW marketing assets managed by Rahim — videos, images, flyers, campaign materials, and brand resources.", caps:["Access all ILIA/NIW marketing assets","Reference approved images and videos","Future: Marketing seat users create/update assets from CIH Portal"], lnks:[["Google Drive","https://drive.google.com"]]},
+    "strapi-cms":     {t:"ILIA CMS — Strapi",      s:"Pending API Token", sc:"amber",  d:"Powers all agent invitation landing pages and client-facing marketing pages. 21 configurations across carriers and product types.", caps:["Read all current landing page content by carrier and strategy","Understand what clients see when they click agent links","Future: Marketing seat users edit and publish landing pages from CIH Portal"], lnks:[["Open Strapi","https://strapi-projects.simplicityniw.com/"]]},
+    "build-engine":   {
+      t:"ILIA Native Build Engine", s:"Partially Active", sc:"purple",
+      d:"The full capability to design, build, and deploy custom ILIA features using Claude + connected infrastructure. Replaces third-party tools like DocuSign with purpose-built native solutions owned entirely by NIW.",
+      caps:[
+        "Build native eSign — PDF generation, signature capture, multi-party routing, legal audit trail",
+        "Design and prototype new ILIA screens in plain English — Claude codes, you review live",
+        "Extract every workflow, formula, and email trigger from the codebase once mirror is live",
+        "Deploy new features to production via GitHub Actions + AWS infrastructure",
+        "Replace any third-party dependency with a purpose-built NIW-owned solution",
+        "Deep technical analysis — identify bugs, debt, and improvement opportunities"
       ],
-      layers: [
-        {layer:'Intelligence', item:'Claude AI + ILIA Master Context', status:'✅ Active', cls:'lb-green'},
-        {layer:'Codebase Read', item:'GitHub mirror (Bitbucket → GitHub)', status:'⏳ Mohit', cls:'lb-amber'},
-        {layer:'Codebase Write', item:'Local dev environment + GitHub push', status:'⏳ IT Admin', cls:'lb-amber'},
-        {layer:'Infrastructure', item:'AWS credentials (SES, S3, Lambda, RDS)', status:'⏳ Not connected', cls:'lb-red'},
-        {layer:'Deployment', item:'Cloudflare Workers / GitHub Actions', status:'✅ Partial', cls:'lb-green'},
-        {layer:'Design', item:'ILIA Design System + Brand Guide', status:'✅ In Drive', cls:'lb-green'},
-        {layer:'Requirements', item:'JIRA + Confluence', status:'✅ Connected', cls:'lb-green'},
-        {layer:'Review', item:'GitHub PR workflow', status:'✅ Org Live', cls:'lb-green'}
+      layers:[
+        ["Intelligence","Claude AI + ILIA Master Context","Active","green"],
+        ["Codebase Read","GitHub mirror (Bitbucket to GitHub)","Mohit","amber"],
+        ["Codebase Write","Local dev environment + GitHub push","IT Admin","amber"],
+        ["Infrastructure","AWS credentials (SES, S3, Lambda, RDS)","Not connected","red"],
+        ["Deployment","Cloudflare Workers / GitHub Actions","Partial","green"],
+        ["Design","ILIA Design System + Brand Guide","In Drive","green"],
+        ["Requirements","JIRA + Confluence","Connected","green"],
+        ["Review","GitHub PR workflow","Org Live","green"]
       ],
-      links: [
-        {label:'GitHub Org', url:'https://github.com/NIWCompanies-ILIA-Central-Intelligence'},
-        {label:'CIH Portal Vision', url:'https://niwcompanies-ilia-central-intelligence.github.io/ilia-cih-portal/'}
-      ]
+      lnks:[["GitHub Org","https://github.com/NIWCompanies-ILIA-Central-Intelligence"],["CIH Portal Vision","https://niwcompanies-ilia-central-intelligence.github.io/ilia-cih-portal/"]]
     }
   };
 
-  function openConnModal(cardId) {
-    const m = CONN_MODALS[cardId];
-    if (!m) return;
-    document.getElementById('conn-modal-title').textContent = m.title;
-    document.getElementById('conn-modal-status').innerHTML = '<span style="' + m.statusStyle + 'font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:12px;">' + m.status + '</span>';
-    document.getElementById('conn-modal-desc').textContent = m.desc;
-    document.getElementById('conn-modal-caps').innerHTML = m.capabilities.map(c => '<li style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--ink);">' + c + '</li>').join('');
-    const layersEl = document.getElementById('conn-modal-layers');
-    if (m.layers && m.layers.length > 0) {
-      layersEl.style.display = 'block';
-      layersEl.innerHTML = '<div style="font-size:11px;font-family:DM Mono,monospace;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">What's Required</div><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:var(--off-white);"><th style="padding:7px 10px;text-align:left;color:var(--muted);font-weight:600;border:1px solid var(--border);">Layer</th><th style="padding:7px 10px;text-align:left;color:var(--muted);font-weight:600;border:1px solid var(--border);">What's Needed</th><th style="padding:7px 10px;text-align:left;color:var(--muted);font-weight:600;border:1px solid var(--border);">Status</th></tr></thead><tbody>' + m.layers.map(l => '<tr><td style="padding:7px 10px;border:1px solid var(--border);font-weight:600;color:var(--ink);">' + l.layer + '</td><td style="padding:7px 10px;border:1px solid var(--border);color:var(--muted);">' + l.item + '</td><td style="padding:7px 10px;border:1px solid var(--border);"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;" class="' + l.cls + '">' + l.status + '</span></td></tr>').join('') + '</tbody></table>';
+  var statusColors = {
+    green:  "background:#E6F5EA;color:#30934C;",
+    amber:  "background:#FEF4E3;color:#9B5500;",
+    red:    "background:#FEF2F2;color:#DC2626;",
+    purple: "background:#F3EFFE;color:#7C3AED;",
+    muted:  "background:#F5F7FA;color:#6B7E8F;border:1px solid #D4DFE9;"
+  };
+
+  window.openConnModal = function(id) {
+    var m = MODALS[id];
+    if (!m) { console.warn("No modal for:", id); return; }
+    var overlay = document.getElementById("connModal");
+    if (!overlay) { console.warn("connModal not found"); return; }
+    
+    document.getElementById("cmi-title").textContent = m.t;
+    document.getElementById("cmi-status").innerHTML = '<span style="' + statusColors[m.sc] + 'font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:10px;">' + m.s + '</span>';
+    document.getElementById("cmi-desc").textContent = m.d;
+    document.getElementById("cmi-caps").innerHTML = m.caps.map(function(c){ return '<li style="padding:6px 0;border-bottom:1px solid #D4DFE9;font-size:13px;color:#0D1F2D;">'+c+'</li>'; }).join('');
+    
+    var layersEl = document.getElementById("cmi-layers");
+    if (m.layers && m.layers.length) {
+      var rows = m.layers.map(function(l){
+        var badge = '<span style="' + statusColors[l[3]] + 'font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">' + l[2] + '</span>';
+        return '<tr><td style="padding:8px 10px;border:1px solid #D4DFE9;font-weight:600;color:#0D1F2D;font-size:12px;">'+l[0]+'</td><td style="padding:8px 10px;border:1px solid #D4DFE9;color:#6B7E8F;font-size:12px;">'+l[1]+'</td><td style="padding:8px 10px;border:1px solid #D4DFE9;">'+badge+'</td></tr>';
+      }).join('');
+      layersEl.innerHTML = '<p style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#6B7E8F;margin:16px 0 8px;">What\'s Required</p><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#F5F7FA;"><th style="padding:8px 10px;text-align:left;border:1px solid #D4DFE9;font-size:11px;color:#6B7E8F;">Layer</th><th style="padding:8px 10px;text-align:left;border:1px solid #D4DFE9;font-size:11px;color:#6B7E8F;">What\'s Needed</th><th style="padding:8px 10px;text-align:left;border:1px solid #D4DFE9;font-size:11px;color:#6B7E8F;">Status</th></tr></thead><tbody>'+rows+'</tbody></table>';
+      layersEl.style.display = "block";
     } else {
-      layersEl.style.display = 'none';
+      layersEl.style.display = "none";
     }
-    document.getElementById('conn-modal-links').innerHTML = m.links.map(l => '<a href="' + l.url + '" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:var(--blue-mid);color:white;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;margin-right:8px;margin-top:4px;">' + l.label + ' →</a>').join('');
-    document.getElementById('connModal').classList.add('open');
-  }
+    
+    document.getElementById("cmi-links").innerHTML = m.lnks.map(function(l){
+      return '<a href="'+l[1]+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:7px 16px;background:#0076BD;color:white;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;margin-right:8px;margin-top:4px;">'+l[0]+' &rarr;</a>';
+    }).join('');
+    
+    overlay.style.display = "flex";
+  };
 
-  function closeConnModal() {
-    document.getElementById('connModal').classList.remove('open');
-  }
+  window.closeConnModal = function() {
+    var overlay = document.getElementById("connModal");
+    if (overlay) overlay.style.display = "none";
+  };
 
-  document.addEventListener('click', function(e) {
-    if (e.target.id === 'connModal') closeConnModal();
+  document.addEventListener("DOMContentLoaded", function() {
+    var overlay = document.getElementById("connModal");
+    if (overlay) overlay.addEventListener("click", function(e){ if(e.target===overlay) closeConnModal(); });
   });
+})();
 </script>
 </body>
 </html>
